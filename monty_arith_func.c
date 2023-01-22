@@ -1,117 +1,180 @@
 #include "monty.h"
 
 /**
- * monty_add - Adds the top two values of a stack_t linked list.
- * @stack: A pointer to the top mode node of a stack_t linked list.
- * @line_number: The current working line number of a Monty bytecodes file.
- *
- * Description: The result is stored in the second value node
- *              from the top and the top value  is removed.
- */
-void monty_add(stack_t **stack, unsigned int line_number)
+* f_add - function that adds the top two elements of the stack
+* @head: double pointer head to the stack
+* @counter: line count
+*
+* Return: nothing
+*/
+void f_add(stack_t **head, unsigned int counter)
 {
-	if ((*stack)->next == NULL || (*stack)->next->next == NULL)
-	{
-		set_op_tok_error(short_stack_error(line_number, "add"));
-		return;
-	}
+	stack_t *h;
+	int length = 0, temp;
 
-	(*stack)->next->next->n += (*stack)->next->n;
-	monty_pop(stack, line_number);
+	h = *head;
+	while (h)
+	{
+		h = h->next;
+		length++;
+	}
+	if (length < 2)
+	{
+		fprintf(stderr, "L%d: can't add, stack too short\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
+		exit(EXIT_FAILURE);
+	}
+	h = *head;
+	temp = h->n + h->next->n;
+	h->next->n = temp;
+	*head = h->next;
+	free(h);
 }
 
 /**
- * monty_sub - Subtracts the second value from the top of
- *             a stack_t linked list by the top value.
- * @stack: A pointer to the top mode node of a stack_t linked list.
- * @line_number: The current working line number of a Monty bytecodes file.
- *
- * Description: The result is stored in the second value node
- *              from the top and the top value is removed.
- */
-void monty_sub(stack_t **stack, unsigned int line_number)
+* f_sub - function that substracts nodes
+* @head: double head pointer to the stack
+* @counter: line count
+*
+* Return: nothing
+*/
+void f_sub(stack_t **head, unsigned int counter)
 {
-	if ((*stack)->next == NULL || (*stack)->next->next == NULL)
-	{
-		set_op_tok_error(short_stack_error(line_number, "sub"));
-		return;
-	}
+	stack_t *temp;
+	int sub, nd;
 
-	(*stack)->next->next->n -= (*stack)->next->n;
-	monty_pop(stack, line_number);
+	temp = *head;
+	for (nd = 0; temp != NULL; nd++)
+		temp = temp->next;
+	if (nd < 2)
+	{
+		fprintf(stderr, "L%d: can't sub, stack too short\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
+		exit(EXIT_FAILURE);
+	}
+	temp = *head;
+	sub = temp->next->n - temp->n;
+	temp->next->n = sub;
+	*head = temp->next;
+	free(temp);
 }
 
 /**
- * monty_div - Divides the second value from the top of
- *             a stack_t linked list by the top value.
- * @stack: A pointer to the top mode node of a stack_t linked list.
- * @line_number: The current working line number of a Monty bytecodes file.
- *
- * Description: The result is stored in the second value node
- *              from the top and the top value is removed.
- */
-void monty_div(stack_t **stack, unsigned int line_number)
+* f_mul - function that multiplies the top two elements of the stack
+* @head: double head pointer to the stack
+* @counter: line count
+*
+* Return: nothing
+*/
+void f_mul(stack_t **head, unsigned int counter)
 {
-	if ((*stack)->next == NULL || (*stack)->next->next == NULL)
-	{
-		set_op_tok_error(short_stack_error(line_number, "div"));
-		return;
-	}
+	stack_t *h;
+	int length = 0, temp;
 
-	if ((*stack)->next->n == 0)
+	h = *head;
+	while (h)
 	{
-		set_op_tok_error(div_error(line_number));
-		return;
+		h = h->next;
+		length++;
 	}
-
-	(*stack)->next->next->n /= (*stack)->next->n;
-	monty_pop(stack, line_number);
+	if (length < 2)
+	{
+		fprintf(stderr, "L%d: can't mul, stack too short\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
+		exit(EXIT_FAILURE);
+	}
+	h = *head;
+	temp = h->next->n * h->n;
+	h->next->n = temp;
+	*head = h->next;
+	free(h);
 }
 
 /**
- * monty_mul - Multiplies the second value from the top of
- *             a stack_t linked list by the top value.
- * @stack: A pointer to the top mode node of a stack_t linked list.
- * @line_number: The current working line number of a Monty bytecodes file.
- *
- * Description: The result is stored in the second value node
- *              from the top and the top value is removed.
- */
-void monty_mul(stack_t **stack, unsigned int line_number)
+* f_div - function that divides the top two elements of the stack
+* @head: double head pointer to the stack
+* @counter: line count
+*
+* Return: nothing
+*/
+void f_div(stack_t **head, unsigned int counter)
 {
-	if ((*stack)->next == NULL || (*stack)->next->next == NULL)
-	{
-		set_op_tok_error(short_stack_error(line_number, "mul"));
-		return;
-	}
+	stack_t *h;
+	int length = 0, temp;
 
-	(*stack)->next->next->n *= (*stack)->next->n;
-	monty_pop(stack, line_number);
+	h = *head;
+	while (h)
+	{
+		h = h->next;
+		length++;
+	}
+	if (length < 2)
+	{
+		fprintf(stderr, "L%d: can't div, stack too short\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
+		exit(EXIT_FAILURE);
+	}
+	h = *head;
+	if (h->n == 0)
+	{
+		fprintf(stderr, "L%d: division by zero\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
+		exit(EXIT_FAILURE);
+	}
+	temp = h->next->n / h->n;
+	h->next->n = temp;
+	*head = h->next;
+	free(h);
 }
 
 /**
- * monty_mod - Computes the modulus of the second value from the
- *             top of a stack_t linked list  by the top value.
- * @stack: A pointer to the top mode node of a stack_t linked list.
- * @line_number: The current working line number of a Monty bytecodes file.
- *
- * Description: The result is stored in the second value node
- *              from the top and the top value is removed.
- */
-void monty_mod(stack_t **stack, unsigned int line_number)
+* f_mod - function that computes the remainder of the division of the second
+* top element of the stack by the top element of the stack
+* @head: double head pointer to the stack
+* @counter: line count
+*
+* Return: nothing
+*/
+void f_mod(stack_t **head, unsigned int counter)
 {
-	if ((*stack)->next == NULL || (*stack)->next->next == NULL)
-	{
-		set_op_tok_error(short_stack_error(line_number, "mod"));
-		return;
-	}
+	stack_t *h;
+	int length = 0, temp;
 
-	if ((*stack)->next->n == 0)
+	h = *head;
+	while (h)
 	{
-		set_op_tok_error(div_error(line_number));
-		return;
+		h = h->next;
+		length++;
 	}
-
-	(*stack)->next->next->n %= (*stack)->next->n;
-	monty_pop(stack, line_number);
+	if (length < 2)
+	{
+		fprintf(stderr, "L%d: can't mod, stack too short\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
+		exit(EXIT_FAILURE);
+	}
+	h = *head;
+	if (h->n == 0)
+	{
+		fprintf(stderr, "L%d: division by zero\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
+		exit(EXIT_FAILURE);
+	}
+	temp = h->next->n % h->n;
+	h->next->n = temp;
+	*head = h->next;
+	free(h);
 }
