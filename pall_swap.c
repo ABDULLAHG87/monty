@@ -1,6 +1,28 @@
 #include "monty.h"
 
 /**
+* f_pall - function that prints everything in the stack
+* @head: double head pointer to the stack
+* @counter: unused line count
+*
+* Return: nothing
+*/
+void f_pall(stack_t **head, unsigned int counter)
+{
+	stack_t *current;
+	(void)counter;
+
+	current = *head;
+	if (current == NULL)
+		return;
+	while (current)
+	{
+		printf("%d\n", current->n);
+		current = current->next;
+	}
+}
+
+/**
 * f_swap - function that swaps the top two elements of the stack
 * @head: head of stack
 * @counter: line count
